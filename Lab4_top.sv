@@ -69,12 +69,12 @@ shuffle_array encrypt (
 						.output_data(encrypt_data), 
 						.outAddress(encrypt_address)
 					  );
-					  
+				  
 //Main state machine 
 always_ff @(posedge CLOCK_50) begin 
 	case(state) 
 	
-	idle: if(KEY[0]) state <= populate_RAM; 
+	idle: if(!KEY[0]) state <= populate_RAM; 
 	
 	populate_RAM: if(end_pop) state <= encrypt_RAM; 
 	
@@ -98,8 +98,8 @@ always_ff @(posedge CLOCK_50) begin
 				  end 
 				  
 	encrypt_RAM: begin 
-				 if(read_mem || encrypt_wren) mem_address <= encrypt_address; 
-				 else mem_address <= 8'bx; //Do not read or write unless prompted 
+				 if(read_mem | encrypt_wren) mem_address <= encrypt_address; 
+				 else mem_address <= 8'bz; //Do not read or write unless prompted 
 				 mem_data <= encrypt_data; 
 				 write_enable <= encrypt_wren; 
 				 end 
