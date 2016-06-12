@@ -33,6 +33,10 @@ assign secret_key = 23'h000249;
 logic end_decrypt, write_ram;
 logic [7:0] decrypted_data, rom_addr, decrypt_addr, decrypt_wren, echo_decrypt, ram_addr, ram_wren;
 
+//Task 2b
+logic end_decrypt, write_ram;
+logic [7:0] decrypted_data, rom_addr, decrypt_addr, decrypt_wren, echo_decrypt, ram_addr, ram_wren;
+
 
 parameter idle = 12'b00000_0000000; 
 parameter populate_RAM = 12'b00001_0000001; 
@@ -79,6 +83,7 @@ shuffle_array encrypt (
 
 //Task 2b
 //fsm taking care of loop in 2b. Decrypt	  
+
 /*simple_decrypt decrypt (
 						.start(end_encrypt), 
 						.finish(end_decrypt), 
@@ -91,7 +96,9 @@ shuffle_array encrypt (
 						.ram_data(ram_data), 
 						.write_decrypted(decrypt_wren), 
 						.out_addr(decrypt_addr)
+
 						);*/
+
 
 //32x8 rom containing secret message
 rom secret_message	(
@@ -121,6 +128,10 @@ always_ff @(posedge CLOCK_50) begin
 	read_test: state <= finished; 
 	
 	encrypt_RAM: if(end_encrypt) state <= decrypt_ROM; 
+
+	
+	decrypt_ROM: if(end_decrypt) state <= finished; //change when additional states are added 
+
 	
 	decrypt_ROM: if(end_decrypt) state <= finished; //change when additional states are added 
 	
@@ -141,6 +152,7 @@ always_ff @(posedge CLOCK_50) begin
 				  write_enable <= count_wren; 
 				  end 
 				  
+
 	read_test: 	 begin 
 				  mem_address <= 8'h01; 
 				  mem_data <= mem_data; 
@@ -164,6 +176,19 @@ always_ff @(posedge CLOCK_50) begin
 			  mem_data <= mem_data; 
 			  write_enable <= 1'b0; 
 			  end */
+
+	encrypt_RAM: begin 
+				 mem_address <= encrypt_address; 
+				 mem_data <= encrypt_data; 
+				 write_enable <= encrypt_wren; 
+				 end 
+	
+	decrypt_ROM: begin
+				 mem_address <= ram_addr;
+				 mem_data <= ram_data;
+				 write_enable <= write_ram;
+				 end
+
 				 
 	default: begin 
 			 mem_address <= mem_address; 
