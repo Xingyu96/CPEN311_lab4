@@ -11,28 +11,27 @@ output [7:0] outAddress, output_data;
 logic [7:0] state; 
 logic [7:0] i_mod_3, i, j, data_i, data_j, secret_key_byte; 
 
-parameter idle = 8'b00000_000; 
-parameter init_vals = 8'b00001_000; 
-parameter check_i = 8'b00010_000; 
-parameter mod_i = 8'b00011_000; 
-parameter determine_key = 8'b00100_000; 
-parameter set_values_for_read_1 = 8'b00101_000;
-parameter read_s_mem = 8'b00110_010; //Read signal 
-parameter add_comps = 8'b00111_000;
-parameter set_values_for_read_2 = 8'b01000_000;  
-parameter read_s_mem_2 = 8'b01001_010; //Read signal  
-parameter store_values = 8'b01010_000;
-parameter set_values_for_write_1 = 8'b01011_000;  
-parameter write_s_i = 8'b01100_100; //Write signal
-parameter set_values_for_write_2 = 8'b1101_000;  
-parameter write_s_j = 8'b01110_100; //Write signal 
-parameter inc_i = 8'b01111_000; 
-parameter finished = 8'b10000_001; 
-parameter additional_wait_1 = 8'b10001_000; 
-parameter additional_wait_2 = 8'b10010_000; 
+parameter idle = 7'b00000_00; 
+parameter init_vals = 7'b00001_00; 
+parameter check_i = 7'b00010_00; 
+parameter mod_i = 7'b00011_00; 
+parameter determine_key = 7'b00100_00; 
+parameter set_values_for_read_1 = 7'b00101_00;
+parameter read_s_mem = 7'b00110_00;  
+parameter add_comps = 7'b00111_00;
+parameter set_values_for_read_2 = 7'b01000_00;  
+parameter read_s_mem_2 = 7'b01001_00; //Read signal  
+parameter store_values = 7'b01010_00;
+parameter set_values_for_write_1 = 7'b01011_00;  
+parameter write_s_i = 7'b01100_10; //Write signal
+parameter set_values_for_write_2 = 7'b1101_00;  
+parameter write_s_j = 7'b01110_10; //Write signal 
+parameter inc_i = 7'b01111_00; 
+parameter finished = 7'b10000_01; 
+
 
 assign finish = state[0]; 
-assign write = state[2]; 
+assign write = state[1]; 
 
 //assign LED = input_data; 
 
@@ -43,24 +42,20 @@ always_ff @(posedge clk) begin
 		
 		init_vals: state <= check_i; 
 		
-		check_i: if (i>=8'h04) state <= finished; 
-				 else state <= mod_i; //Temporary, testing only 
+		check_i: if (i>=8'hFF) state <= mod_i; 
+				 else state <= finished; 
 				 
 		mod_i: state <= determine_key; 
 		
 		determine_key: state <= set_values_for_read_1; 
 		
-		set_values_for_read_1: state <= read_s_mem; 
-		
-		//additional_wait_1: state <= read_s_mem; 
+		set_values_for_read_1: state <= read_s_mem;  
 				
 		read_s_mem: state <= add_comps; 
 		
 		add_comps: state <= set_values_for_read_2;
 
 		set_values_for_read_2: state <= read_s_mem_2; 
-		
-		//additional_wait_2: state <= read_s_mem_2; 
 
 		read_s_mem_2: state <= set_values_for_write_1; 
 
@@ -132,7 +127,7 @@ always_ff @(posedge clk) begin
 							secret_key_byte <= secret_key_byte; 
 							data_i <= data_i; 
 							data_j <= data_j; 
-							outAddress <= 8'h05;  
+							outAddress <= i;  
 							output_data <= output_data; 
 							end 
 	//Read s[i] 
@@ -159,7 +154,7 @@ always_ff @(posedge clk) begin
 			   output_data <= output_data; 
 			   end 
 	
-	//Set address to be read 
+	//Set address to j
 	set_values_for_read_2: begin 
 						  i <= i; 
 						  j <= j;
