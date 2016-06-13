@@ -1,11 +1,11 @@
 
 //module to perform task 2b, outputs decrypted message
-module simple_decrypt(start, finish, clk, decrypted_data, rom_addr, rom_data, write_ram, ram_addr, ram_data, write_decrypted, out_addr);
+module simple_decrypt(start, finish, clk, decrypted_data, rom_addr, rom_data, write_ram, ram_addr, ram_data, write_decrypted, out_addr, write_ram_data);
 
 input clk, start;
 input logic [7:0] rom_data, ram_data;
 output write_ram, finish, write_decrypted;
-output logic [7:0] decrypted_data, rom_addr, ram_addr, out_addr; 
+output logic [7:0] decrypted_data, rom_addr, ram_addr, out_addr, write_ram_data; 
 
 logic [7:0] state;
 logic [7:0] i, j, S_i, S_j, S_SiplusSj, f, k;
@@ -99,13 +99,13 @@ case(state)
 		end
 	//write S[i] into S[j]
 	write_Si_to_Sj: begin
-		decrypted_data <= S_i;
+		write_ram_data <= S_i;
 		ram_addr <= j;
 		end
 	//write S[j] to S[i]
 	write_Sj_to_Si: begin
 		ram_addr <= i;
-		decrypted_data <= S_j;
+		write_ram_data <= S_j;
 		end
 	//perform f = s[(s[i] + s[j])]
 	//first set read address, wait a cycle for data to come in
