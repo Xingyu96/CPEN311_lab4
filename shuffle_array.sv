@@ -1,13 +1,11 @@
-module shuffle_array(clk, start, finish, key, write, in_data, output_data, outAddress, LED, press); 
+module shuffle_array(clk, start, finish, key, write, in_data, output_data, outAddress); 
 
 input clk, start; 
-input press; //For debugging 
 input [23:0] key;  
 //input [7:0] original_mem, scrambled_mem;
 input [7:0] in_data; 
-output [7:0] LED;  
-output finish, write; 
-output [7:0] outAddress, output_data; 
+output logic finish, write; 
+output logic [7:0] outAddress, output_data; 
  
 logic [6:0] state; 
 logic [7:0] i_mod_3, i, j, data_i, data_j, secret_key_byte; 
@@ -38,8 +36,6 @@ parameter wait_2b = 7'b10100_00;
 
 assign finish = state[0]; 
 assign write = state[1]; 
-
-assign LED = data_j; 
 
 always_ff @(posedge clk) begin 
 	case(state) 
